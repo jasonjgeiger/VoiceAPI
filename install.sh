@@ -33,7 +33,6 @@ if [[ "$setup_service" =~ ^[Yy]$ ]]; then
   SERVICE_FILE="/etc/systemd/system/voiceapi.service"
   USERNAME=$(whoami)
   WORKDIR=$(pwd)
-  PYTHON_PATH=$(which python3)
   GUNICORN_PATH=$(which gunicorn)
   ENV_PATH="$WORKDIR/.env"
 
@@ -55,7 +54,7 @@ EOL
 
   sudo systemctl daemon-reload
   sudo systemctl enable voiceapi
-  sudo systemctl start voiceapi
+  sudo systemctl restart voiceapi
 
   echo "\n[VoiceAPI] Systemd service installed and started using gunicorn."
   echo "To check status:   sudo systemctl status voiceapi"
