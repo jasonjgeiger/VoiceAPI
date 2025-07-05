@@ -12,21 +12,23 @@ if not api_key:
 client = ElevenLabs(api_key=api_key)
 mpg321_process = None
 
-@app.route('/tts', methods=['POST'])
+@app.route('/tts', methods=['POST', 'GET'])
 def text_to_speech():
     global mpg321_process
-    text = request.args.get('text')
-    voice_id = request.args.get('voice_id')
-    data = {}
-
-    # Only try to parse JSON if content type is application/json
-    if (not text or text.strip() == '') and request.is_json:
-        data = request.get_json(silent=True) or {}
-        text = data.get('text')
+    if request.method == 'GET':
+        text = request.args.get('text')
+        voice_id = request.args.get('voice_id', 'JBFqnCBsd6RMkjVDRZzb')
+    else:
+        text = request.args.get('text')
+        voice_id = request.args.get('voice_id')
+        data = {}
+        if (not text or text.strip() == '') and request.is_json:
+            data = request.get_json(silent=True) or {}
+            text = data.get('text')
+            if not voice_id:
+                voice_id = data.get('voice_id')
         if not voice_id:
-            voice_id = data.get('voice_id')
-    if not voice_id:
-        voice_id = 'JBFqnCBsd6RMkjVDRZzb'
+            voice_id = 'JBFqnCBsd6RMkjVDRZzb'
 
     if not text:
         return jsonify({"error": "Text is required"}), 400
