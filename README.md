@@ -15,28 +15,25 @@ A simple Flask API server for text-to-speech using ElevenLabs and mpg321 audio p
    cd VoiceAPI
    ```
 
-2. **Install Python dependencies:**
+2. **Run the install script:**
    ```bash
-   pip install -r requirements.txt
+   chmod +x install.sh
+   ./install.sh
    ```
+   - The script will install all required system and Python dependencies.
+   - You will be prompted to enter your ElevenLabs API key (if not already set). This key will be saved to a `.env` file in the project directory.
 
-3. **Install mpg321 (Linux):**
+3. **Load your environment variables:**
    ```bash
-   sudo apt-get update
-   sudo apt-get install -y mpg321
+   source .env
    ```
+   - This step ensures your API key is available to the server.
 
-4. **Set your ElevenLabs API key:**
-   ```bash
-   export ELEVENLABS_API_KEY=your_actual_api_key
-   ```
-
-5. **Run the server:**
+4. **Run the server:**
    ```bash
    python3 script.py
    ```
-
-The server will start on port 5000.
+   - The server will start on port 5000.
 
 ## Usage
 
@@ -62,5 +59,6 @@ curl -X POST http://localhost:5000/stop
 ```
 
 ## Notes
-- The API key must be set in the environment variable `ELEVENLABS_API_KEY`.
-- Only one audio playback can run at a time; new requests will stop the previous playback. 
+- The API key is saved in the `.env` file and must be loaded with `source .env` before running the server.
+- Only one audio playback can run at a time; new requests will stop the previous playback.
+- If you need to change your API key, you can rerun the install script or edit the `.env` file directly. 
