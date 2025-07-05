@@ -18,20 +18,36 @@ def text_to_speech():
     if request.method == 'GET':
         text = request.args.get('text')
         voice_id = request.args.get('voice_id', 'JBFqnCBsd6RMkjVDRZzb')
+        volume = request.args.get('volume')
     else:
         text = request.args.get('text')
         voice_id = request.args.get('voice_id')
+        volume = request.args.get('volume')
         data = {}
         if (not text or text.strip() == '') and request.is_json:
             data = request.get_json(silent=True) or {}
             text = data.get('text')
             if not voice_id:
                 voice_id = data.get('voice_id')
+            if not volume:
+                volume = data.get('volume')
         if not voice_id:
             voice_id = 'JBFqnCBsd6RMkjVDRZzb'
 
     if not text:
         return jsonify({"error": "Text is required"}), 400
+
+    # Validate volume
+    mpg321_args = ['mpg321']
+    if volume is not None:
+        try:
+            vol_int = int(volume)
+            if 0 <= vol_int <= 100:
+                mpg321_args += ['-g', str(vol_int)]
+            else:
+                return jsonify({"error": "Volume must be between 0 and 100"}), 400
+        except ValueError:
+            return jsonify({"error": "Volume must be an integer"}), 400
 
     # Stop any existing playback
     if mpg321_process:
@@ -53,7 +69,7 @@ def text_to_speech():
 
     # Play with mpg321
     try:
-        mpg321_process = subprocess.Popen(['mpg321', output_file])
+        mpg321_process = subprocess.Popen(mpg321_args + [output_file])
         return jsonify({"message": f"Playing text: {text}"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
