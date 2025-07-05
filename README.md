@@ -22,18 +22,29 @@ A simple Flask API server for text-to-speech using ElevenLabs and mpg321 audio p
    ```
    - The script will install all required system and Python dependencies.
    - You will be prompted to enter your ElevenLabs API key (if not already set). This key will be saved to a `.env` file in the project directory.
+   - **After installation, you will be prompted to set up VoiceAPI as a systemd service to run in the background.**
 
-3. **Load your environment variables:**
-   ```bash
-   source .env
-   ```
-   - This step ensures your API key is available to the server.
-
-4. **Run the server:**
-   ```bash
-   python3 script.py
-   ```
+3. **If you do not use the systemd service:**
+   - **Load your environment variables:**
+     ```bash
+     source .env
+     ```
+   - **Run the server manually:**
+     ```bash
+     python3 script.py
+     ```
    - The server will start on port 5000.
+
+## Running as a Background Service (systemd)
+If you choose to set up the systemd service during installation, VoiceAPI will run in the background and start automatically on boot.
+
+**Service management commands:**
+- Check status:   `sudo systemctl status voiceapi`
+- View logs:      `journalctl -u voiceapi -f`
+- Stop service:   `sudo systemctl stop voiceapi`
+- Start service:  `sudo systemctl start voiceapi`
+
+You can always set up the systemd service later by re-running the install script.
 
 ## Usage
 
@@ -59,6 +70,6 @@ curl -X POST http://localhost:5000/stop
 ```
 
 ## Notes
-- The API key is saved in the `.env` file and must be loaded with `source .env` before running the server.
+- The API key is saved in the `.env` file and must be loaded with `source .env` before running the server manually.
 - Only one audio playback can run at a time; new requests will stop the previous playback.
 - If you need to change your API key, you can rerun the install script or edit the `.env` file directly. 
