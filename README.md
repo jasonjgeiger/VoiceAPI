@@ -20,23 +20,28 @@ A simple Flask API server for text-to-speech using ElevenLabs and mpg321 audio p
    chmod +x install.sh
    ./install.sh
    ```
-   - The script will install all required system and Python dependencies.
+   - The script will install all required system and Python dependencies, including [gunicorn](https://gunicorn.org/) for production use.
    - You will be prompted to enter your ElevenLabs API key (if not already set). This key will be saved to a `.env` file in the project directory.
-   - **After installation, you will be prompted to set up VoiceAPI as a systemd service to run in the background.**
+   - **After installation, you will be prompted to set up VoiceAPI as a systemd service to run in the background using gunicorn.**
 
 3. **If you do not use the systemd service:**
    - **Load your environment variables:**
      ```bash
      source .env
      ```
-   - **Run the server manually:**
+   - **Run the server with gunicorn (recommended for production):**
+     ```bash
+     gunicorn --bind 0.0.0.0:5000 script:app
+     ```
+   - The server will start on port 5000.
+   - **For development only:**
      ```bash
      python3 script.py
      ```
-   - The server will start on port 5000.
+     (You may see a warning about the Flask development server. Use gunicorn for production.)
 
 ## Running as a Background Service (systemd)
-If you choose to set up the systemd service during installation, VoiceAPI will run in the background and start automatically on boot.
+If you choose to set up the systemd service during installation, VoiceAPI will run in the background using gunicorn and start automatically on boot.
 
 **Service management commands:**
 - Check status:   `sudo systemctl status voiceapi`
@@ -72,4 +77,5 @@ curl -X POST http://localhost:5000/stop
 ## Notes
 - The API key is saved in the `.env` file and must be loaded with `source .env` before running the server manually.
 - Only one audio playback can run at a time; new requests will stop the previous playback.
-- If you need to change your API key, you can rerun the install script or edit the `.env` file directly. 
+- If you need to change your API key, you can rerun the install script or edit the `.env` file directly.
+- **Warning:** The Flask development server is not suitable for production. Always use gunicorn for production deployments. 

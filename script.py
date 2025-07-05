@@ -15,9 +15,18 @@ mpg321_process = None
 @app.route('/tts', methods=['POST'])
 def text_to_speech():
     global mpg321_process
-    data = request.get_json()
-    text = data.get('text')
-    voice_id = data.get('voice_id', 'JBFqnCBsd6RMkjVDRZzb')
+    # Try to get text and voice_id from query parameters first
+    text = request.args.get('text')
+    voice_id = request.args.get('voice_id')
+    # Fallback to JSON body if not present in query
+    if not text or text.strip() == '':
+        data = request.get_json(silent=True) or {}
+        text = data.get('text')
+        if not voice_id:
+            voice_id = data.get('voice_id')
+    # Use default voice_id if not provided
+    if not voice_id:
+        voice_id = 'JBFqnCBsd6RMkjVDRZzb'
 
     if not text:
         return jsonify({"error": "Text is required"}), 400
